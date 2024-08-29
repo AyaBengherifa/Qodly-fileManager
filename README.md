@@ -15,4 +15,73 @@ A robust file management component with advanced navigation and file operations.
 |            |
 
 **Some examples of data in this case:**
-[{"name":"Documents","type":"folder","children":[{"name":"Resume.pdf","type":"file","lastModified":"2024-08-20T14:30:00Z","size":120},{"name":"CoverLetter.docx","type":"file","lastModified":"2024-08-18T09:00:00Z","size":45},{"name":"Projects","type":"folder","children":[{"name":"Project1","type":"folder","children":[{"name":"Project1_Document.pdf","type":"file","lastModified":"2024-08-15T11:00:00Z","size":200}]},{"name":"Project2","type":"folder","children":[]}]}]},{"name":"Images","type":"folder","children":[{"name":"Vacation.jpg","type":"file","lastModified":"2024-07-25T10:00:00Z","size":3000}]}]
+```json
+[
+  {
+    "name": "Documents",
+    "type": "folder",
+    "children": [
+      {
+        "name": "Resume.pdf",
+        "type": "file",
+        "lastModified": "2024-08-20T14:30:00Z",
+        "size": 120
+      },
+      {
+        "name": "CoverLetter.docx",
+        "type": "file",
+        "lastModified": "2024-08-18T09:00:00Z",
+        "size": 45
+      },
+      {
+        "name": "Projects",
+        "type": "folder",
+        "children": [
+          {
+            "name": "Project1",
+            "type": "folder",
+            "children": [
+              {
+                "name": "Project1_Document.pdf",
+                "type": "file",
+                "lastModified": "2024-08-15T11:00:00Z",
+                "size": 200
+              }
+            ]
+          },
+          {
+            "name": "Project2",
+            "type": "folder",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Images",
+    "type": "folder",
+    "children": [
+      {
+        "name": "Vacation.jpg",
+        "type": "file",
+        "lastModified": "2024-07-25T10:00:00Z",
+        "size": 3000
+      }
+    ]
+  }
+]
+```
+## Actions
+
+### `onFileClick`
+
+**Type:** `(item: IFileItem) => void`
+
+**Description:** Callback function triggered when a file item is clicked. It receives the clicked file item as an argument, which allows for custom handling of file selections, such as displaying file details or performing other actions.
+
+### `onFolderClick`
+
+**Type:** `(item: IFileItem) => void`
+
+**Description:** Callback function triggered when a folder item is clicked. It receives the clicked folder item as an argument, enabling actions such as navigating into the folder or performing other folder-specific operations.

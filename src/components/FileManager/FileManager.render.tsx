@@ -19,7 +19,8 @@ const FileManagerItem: FC<{
   level: number;
   onFileClick: (item: IFileItem) => void;
   onFolderClick: (item: IFileItem) => void;
-}> = ({ item, level, onFileClick, onFolderClick }) => {
+  selectedItem: IFileItem | null;
+}> = ({ item, level, onFileClick, onFolderClick, selectedItem }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleArrowClick = (e: React.MouseEvent) => {
@@ -35,10 +36,15 @@ const FileManagerItem: FC<{
     }
   };
 
+  const isSelected = selectedItem?.path === item.path;
+
   return (
     <div className={cn('file-item select-none', { 'ml-4': level > 0 })}>
       <div
-        className="file-item-row flex items-center cursor-pointer hover:bg-gray-200 p-2 rounded"
+        className={cn('file-item-row flex items-center cursor-pointer p-2 rounded', {
+          'bg-blue-100': isSelected,
+          'hover:bg-gray-200': !isSelected,
+        })}
         onClick={handleItemClick}
       >
         {item.type === 'folder' && (
@@ -66,6 +72,7 @@ const FileManagerItem: FC<{
               level={level + 1}
               onFileClick={onFileClick}
               onFolderClick={onFolderClick}
+              selectedItem={selectedItem}
             />
           ))}
         </div>
@@ -81,22 +88,11 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
   const [path, setPath] = useState<IFileItem[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [sortBy, setSortBy] = useState('name');
+  const [selectedItem, setSelectedItem] = useState<IFileItem | null>(null);
+
   const {
     sources: { datasource: ds },
   } = useSources();
-
-  const handleFileClick = (item: IFileItem) => {
-    console.log('File clicked:', item.name);
-    setCurrentItem(item);
-    emit('onfileclick');
-  };
-
-  const handleFolderClick = (item: IFileItem) => {
-    if (item.type === 'folder') {
-      setCurrentItem(item);
-      setPath((prevPath) => [...prevPath, item]);
-    }
-  };
 
   const handleEmitClick = () => {
     emit('onfolderclick');
@@ -133,6 +129,7 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
       }
     };
   }, [ds]);
+
   const filterItems = (items: IFileItem[], value: string): IFileItem[] => {
     return items
       .filter((item) => item.name.toLowerCase().includes(value.toLowerCase()))
@@ -141,6 +138,7 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
         children: item.children ? filterItems(item.children, value) : [],
       }));
   };
+
   const sortItems = (items: IFileItem[], value: string): IFileItem[] => {
     return items.sort((a, b) => {
       if (value === 'name') {
@@ -156,6 +154,57 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
     currentItem?.type === 'folder'
       ? sortItems(filterItems(currentItem.children || [], searchValue), sortBy)
       : [];
+
+  const handleFileClick = (item: IFileItem) => {
+    setSelectedItem(item);
+    console.log(item.path);
+    console.log(item.name);
+  };
+
+  const handleFolderClick = (item: IFileItem) => {
+    setCurrentItem(item);
+    setPath((prevPath) => [...prevPath, item]);
+    setSelectedItem(null);
+  };
+
+  // const downloadFile = async () => {
+  //   if (selectedItem && selectedItem.path) {
+  //     try {
+  //       console.log("Downloading file from URL:", selectedItem.path);
+  //       const fileURL = selectedItem.path;
+
+  //       const response = await fetch(fileURL, {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/octet-stream',
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`Network response was not ok: ${response.statusText}`);
+  //       }
+
+  //       const blob = await response.blob();
+  //       const url = window.URL.createObjectURL(blob);
+
+  //       const link = document.createElement('a');
+  //       link.href = url;
+  //       link.download = selectedItem.name || 'file';
+  //       document.body.appendChild(link);
+
+  //       link.click();
+
+  //       document.body.removeChild(link);
+  //       window.URL.revokeObjectURL(url);
+  //     } catch (error) {
+  //       console.error('Failed to download file:', error);
+  //       alert('Failed to download file');
+  //     }
+  //   } else {
+  //     alert('No file selected');
+  //   }
+  // };
+
   const renderNavigationPane = () => (
     <div className="navigation-pane w-1/4 border-r border-gray-300 bg-gray-50 p-4">
       <h3 className="font-semibold text-gray-600 text-lg mb-4">Navigation</h3>
@@ -167,6 +216,7 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
             level={0}
             onFileClick={handleFileClick}
             onFolderClick={handleFolderClick}
+            selectedItem={selectedItem}
           />
         ))}
       </div>
@@ -188,8 +238,10 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
           {filteredContentItems.map((item, index) => (
             <div
               key={index}
-              className="file-item-row flex items-center p-2 hover:bg-gray-200 rounded cursor-pointer"
-              onClick={() => handleFolderClick(item)}
+              className={cn('file-item-row flex items-center p-2 rounded cursor-pointer', {
+                'bg-blue-100': selectedItem?.path === item.path,
+              })}
+              onClick={() => handleFileClick(item)}
               onContextMenu={(e) => {
                 e.preventDefault();
                 handleEmitClick();
@@ -224,18 +276,21 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
       ref={connect}
       style={style}
       className={cn(
-        'file-manager flex flex-col  bg-white shadow rounded border border-gray-200',
+        'file-manager flex flex-col bg-white shadow rounded border border-gray-200',
         className,
         ...classNames,
       )}
     >
       <div className="w-full border-b border-gray-200 p-2 bg-gray-100 flex items-center">
         <div className="flex items-center space-x-2">
-          <button className="flex text-gray-600 items-center space-x-1 px-4 py-2  rounded hover:bg-gray-600 hover:text-white">
+          <button
+            className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white"
+            // onClick={downloadFile}
+          >
             <IconDownload className="w-4 h-4" />
             <span>Download</span>
           </button>
-          <button className="flex text-gray-600 items-center space-x-1 px-4 py-2  rounded hover:bg-gray-600 hover:text-white">
+          <button className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white">
             <IconTrash className="w-4 h-4" />
             <span>Delete</span>
           </button>

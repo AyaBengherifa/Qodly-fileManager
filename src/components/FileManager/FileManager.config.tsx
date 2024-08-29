@@ -9,6 +9,7 @@ export interface IFileItem {
   lastModified?: string;
   size?: number;
   children?: IFileItem[];
+  path?: string;
 }
 
 export default {
