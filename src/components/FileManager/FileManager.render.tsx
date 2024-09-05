@@ -11,8 +11,8 @@ import {
   IconInfoCircle,
   IconDownload,
   IconSortAscending,
-  IconTrash,
 } from '@tabler/icons-react';
+import axios from 'axios';
 
 const FileManagerItem: FC<{
   item: IFileItem;
@@ -36,15 +36,12 @@ const FileManagerItem: FC<{
     }
   };
 
-  const isSelected = selectedItem?.path === item.path;
-
   return (
     <div className={cn('file-item select-none', { 'ml-4': level > 0 })}>
       <div
-        className={cn('file-item-row flex items-center cursor-pointer p-2 rounded', {
-          'bg-blue-100': isSelected,
-          'hover:bg-gray-200': !isSelected,
-        })}
+        className={cn(
+          'file-item-row flex items-center cursor-pointer p-2 rounded hover:bg-gray-200',
+        )}
         onClick={handleItemClick}
       >
         {item.type === 'folder' && (
@@ -167,47 +164,28 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
     setSelectedItem(null);
   };
 
-  // const downloadFile = async () => {
-  //   if (selectedItem && selectedItem.path) {
-  //     try {
-  //       console.log("Downloading file from URL:", selectedItem.path);
-  //       const fileURL = selectedItem.path;
+  const downloadFile = async () => {
+    if (!selectedItem || !selectedItem.path || !selectedItem.name) return;
 
-  //       const response = await fetch(fileURL, {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/octet-stream',
-  //         },
-  //       });
-
-  //       if (!response.ok) {
-  //         throw new Error(`Network response was not ok: ${response.statusText}`);
-  //       }
-
-  //       const blob = await response.blob();
-  //       const url = window.URL.createObjectURL(blob);
-
-  //       const link = document.createElement('a');
-  //       link.href = url;
-  //       link.download = selectedItem.name || 'file';
-  //       document.body.appendChild(link);
-
-  //       link.click();
-
-  //       document.body.removeChild(link);
-  //       window.URL.revokeObjectURL(url);
-  //     } catch (error) {
-  //       console.error('Failed to download file:', error);
-  //       alert('Failed to download file');
-  //     }
-  //   } else {
-  //     alert('No file selected');
-  //   }
-  // };
+    try {
+      const response = await axios.get(`/proxy?url=${encodeURIComponent(selectedItem.path)}`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', selectedItem.name);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download file:', error);
+    }
+  };
 
   const renderNavigationPane = () => (
     <div className="navigation-pane w-1/4 border-r border-gray-300 bg-gray-50 p-4">
-      <h3 className="font-semibold text-gray-600 text-lg mb-4">Navigation</h3>
       <div className="mt-2 space-y-2">
         {items.map((item, index) => (
           <FileManagerItem
@@ -225,14 +203,27 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
 
   const renderContentView = () => (
     <div className="content-pane w-3/4 p-4">
-      <h3 className="font-semibold text-gray-600 text-lg mb-4">Content</h3>
-      <div className="mb-4">
-        {path.length > 0 && (
-          <button className="text-blue-500 hover:text-blue-700 underline" onClick={handleBackClick}>
-            <IconArrowNarrowLeft />
+      <div className="header flex justify-between mb-4">
+        <div>
+          {path.length > 0 && (
+            <button
+              className="text-blue-500 hover:text-blue-700 underline"
+              onClick={handleBackClick}
+            >
+              <IconArrowNarrowLeft />
+            </button>
+          )}
+        </div>
+        <div className="flex flex-1 space-x-2">
+          <button className="flex-1 text-left text-gray-500 hover:text-gray-900 ">
+            <span className="ml-4">Name</span>
           </button>
-        )}
+          <button className="flex-1 text-left text-gray-500 hover:text-gray-900">
+            <span className="ml-6">Modified</span>
+          </button>
+        </div>
       </div>
+
       {filteredContentItems.length > 0 ? (
         <div className="mt-2 space-y-2">
           {filteredContentItems.map((item, index) => (
@@ -254,10 +245,13 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
               )}
               <div className="flex-1">
                 <div className="font-medium text-gray-700">{item.name}</div>
+
                 <div className="text-sm text-gray-500">
-                  {item.lastModified && <span>Last Modified: {item.lastModified} | </span>}
                   {item.size && <span>Size: {item.size} KB</span>}
                 </div>
+              </div>
+              <div className="flex-1">
+                <div className="font-medium text-gray-600"> {item.lastModified} </div>
               </div>
             </div>
           ))}
@@ -285,14 +279,10 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
         <div className="flex items-center space-x-2">
           <button
             className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white"
-            // onClick={downloadFile}
+            onClick={downloadFile}
           >
             <IconDownload className="w-4 h-4" />
             <span>Download</span>
-          </button>
-          <button className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white">
-            <IconTrash className="w-4 h-4" />
-            <span>Delete</span>
           </button>
         </div>
         <div className="flex text-gray-600 items-center space-x-2 ml-4">
@@ -317,7 +307,6 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
           />
         </div>
       </div>
-
       <div className="flex flex-1">
         {renderNavigationPane()}
         {renderContentView()}

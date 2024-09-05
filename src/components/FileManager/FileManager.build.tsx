@@ -6,7 +6,6 @@ import {
   IconFolder,
   IconFile,
   IconDownload,
-  IconTrash,
   IconSortDescending,
 } from '@tabler/icons-react';
 
@@ -60,10 +59,6 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
           <button className="flex text-gray-600 items-center space-x-1 hover:bg-gray-600 px-4 py-2 hover:text-white rounded">
             <IconDownload />
             <span>Download</span>
-          </button>
-          <button className="flex text-gray-600 items-center space-x-1 hover:bg-gray-600 px-4 py-2 hover:text-white rounded">
-            <IconTrash />
-            <span>Delete</span>
           </button>
           <div className="flex text-gray-600 items-center space-x-2 ml-4">
             <IconSortDescending />

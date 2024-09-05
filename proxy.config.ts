@@ -18,6 +18,7 @@ export function initProxy(env: Record<string, string>): Record<string, string | 
       'api-key': API_KEY,
     },
     changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/proxy/, ''),
     configure(proxy) {
       proxy.on('proxyRes', (proxyRes) => {
         if (proxyRes.headers['Set-Cookie']) {
@@ -32,6 +33,7 @@ export function initProxy(env: Record<string, string>): Record<string, string | 
   };
 
   return [
+    '/proxy',
     '/rest',
     '/$lib',
     '/api',

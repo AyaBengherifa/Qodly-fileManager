@@ -15,6 +15,7 @@ A robust file management component with advanced navigation and file operations.
 |            |
 
 **Some examples of data in this case:**
+
 ```json
 [
   {
@@ -25,13 +26,15 @@ A robust file management component with advanced navigation and file operations.
         "name": "Resume.pdf",
         "type": "file",
         "lastModified": "2024-08-20T14:30:00Z",
-        "size": 120
+        "size": 120,
+        "path": "https://hutchesonlab.fiu.edu/wp-content/uploads/sample-pdf.pdf"
       },
       {
-        "name": "CoverLetter.docx",
+        "name": "CoverLetter.pdf",
         "type": "file",
         "lastModified": "2024-08-18T09:00:00Z",
-        "size": 45
+        "size": 45,
+        "path": "https://pdfobject.com/pdf/sample.pdf"
       },
       {
         "name": "Projects",
@@ -72,6 +75,7 @@ A robust file management component with advanced navigation and file operations.
   }
 ]
 ```
+
 ## Actions
 
 ### `onFileClick`
