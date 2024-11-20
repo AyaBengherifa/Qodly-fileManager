@@ -12,7 +12,6 @@ import {
   IconDownload,
   IconSortAscending,
 } from '@tabler/icons-react';
-import axios from 'axios';
 
 const FileManagerItem: FC<{
   item: IFileItem;
@@ -152,36 +151,20 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
       ? sortItems(filterItems(currentItem.children || [], searchValue), sortBy)
       : [];
 
+  const handleDownload = () => {
+    if (selectedItem) {
+      emit('onDownloadFile', { filePath: selectedItem.path });
+    }
+  };
+
   const handleFileClick = (item: IFileItem) => {
     setSelectedItem(item);
-    console.log(item.path);
-    console.log(item.name);
-  
   };
 
   const handleFolderClick = (item: IFileItem) => {
     setCurrentItem(item);
     setPath((prevPath) => [...prevPath, item]);
     setSelectedItem(null);
-  };
-
-  const downloadFile = async () => {
-    if (!selectedItem || !selectedItem.path || !selectedItem.name) return;
-    try {
-      const response = await axios.get(`${selectedItem.path}`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', selectedItem.name);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to download file:', error);
-    }
   };
 
   const renderNavigationPane = () => (
@@ -278,10 +261,12 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
       <div className="w-full border-b border-gray-200 p-2 bg-gray-100 flex items-center">
         <div className="flex items-center space-x-2">
           <button
-            className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white"
-            onClick={downloadFile}
+            className="flex text-gray-600 items-center space-x-1 px-4 py-2 rounded hover:bg-gray-600 hover:text-white "
+            onClick={handleDownload}
+            disabled={!selectedItem || selectedItem.type === 'folder'}
           >
             <IconDownload className="w-4 h-4" />
+
             <span>Download</span>
           </button>
         </div>
