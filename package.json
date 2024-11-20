@@ -2,7 +2,7 @@
   "app_id": "qodly_5d0fbf8e04643c21c2a3",
   "name": "qodly-filemanager",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "author": {
     "name": "Qodly Team",
@@ -16,29 +16,12 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,jsx,html,css}\""
   },
-  "overrides": {
-    "@ws-ui/webform-editor": {
-      "@ws-ui/code-editor": "0.2.3",
-      "@ws-ui/icons": "0.0.21",
-      "@ws-ui/shared": "0.2.3",
-      "@ws-ui/store": "0.2.4",
-      "@ws-ui/craftjs-core": "0.2.11",
-      "@ws-ui/craftjs-layers": "0.2.4",
-      "@ws-ui/craftjs-utils": "0.2.2"
-    },
-    "@ws-ui/store": {
-      "@ws-ui/icons": "0.0.21"
-    },
-    "@ws-ui/shared": {
-      "@ws-ui/icons": "0.0.21"
-    }
-  },
   "dependencies": {
     "@tabler/icons-react": "^3.14.0",
-    "@ws-ui/craftjs-core": "0.2.11",
+    "@ws-ui/craftjs-core": "^0.2.13",
     "@ws-ui/craftjs-layers": "0.2.4",
     "@ws-ui/craftjs-utils": "0.2.2",
-    "@ws-ui/webform-editor": "0.3.13",
+    "@ws-ui/webform-editor": "0.3.37",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "react": "^17.0.2",
@@ -46,7 +29,7 @@
     "tailwindcss": "^3.4.10"
   },
   "devDependencies": {
-    "@qodly/cli": "^0.2.10",
+    "@qodly/cli": "^0.2.20",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.20.0",

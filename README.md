@@ -10,7 +10,7 @@ A robust file management component with advanced navigation and file operations.
 ### Datasource
 
 | Name       | Type             | Required | Description                                                                                                                                                        |
-| ---------- | ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ---------- | ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Datasource | array of objects | Yes      | The component expects an array of file and folder objects. Each object must have properties defining its type (file or folder), name, size, and lastModified date. |
 |            |
 

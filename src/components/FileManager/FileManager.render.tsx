@@ -156,6 +156,7 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
     setSelectedItem(item);
     console.log(item.path);
     console.log(item.name);
+  
   };
 
   const handleFolderClick = (item: IFileItem) => {
@@ -166,9 +167,8 @@ const FileManager: FC<IFileManagerProps> = ({ style, className, classNames = [] 
 
   const downloadFile = async () => {
     if (!selectedItem || !selectedItem.path || !selectedItem.name) return;
-
     try {
-      const response = await axios.get(`/proxy?url=${encodeURIComponent(selectedItem.path)}`, {
+      const response = await axios.get(`${selectedItem.path}`, {
         responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
